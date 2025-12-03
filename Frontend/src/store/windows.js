@@ -9,9 +9,9 @@ const useWindowStore = create(
 
     openWindow: (WindowKey, data = null) =>
       set((state) => {
-        const win = state.windows[WindowKey];
+        const win = state?.windows[WindowKey];
         win.isOpen = true;
-        win.zIndex = state.nextZIndex;
+        win.zIndex = state?.nextZIndex;
         win.data = data ?? win.data;
         state.nextZIndex++;
       }),
