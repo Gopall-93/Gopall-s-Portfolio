@@ -24,6 +24,7 @@ const Navbar = () => {
       </div>
       <div>
         <ul>
+          {/* #TODO:Add functionality to Icons */}
           {navIcons.map(({ id, img }) => (
             <li key={id}>
               <img src={img} />
