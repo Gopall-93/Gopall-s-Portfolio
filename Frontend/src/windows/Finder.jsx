@@ -1,0 +1,83 @@
+import { WindowControls } from "@components";
+import WindowWrapper from "@components/hoc/WindowWrapper";
+import { locations } from "@Constants";
+import useLocationStore from "@store/location";
+import useWindowStore from "@store/windows";
+import clsx from "clsx";
+import { Search } from "lucide-react";
+import React from "react";
+
+const Finder = () => {
+  const { openWindow } = useWindowStore();
+  const openItem = (item) => {
+    if (item.fileType === "pdf") return openWindow("resume");
+    if (item.kind === "folder") return setActiveLocation(item);
+    if (["fig", "url"].includes(item.fileType) && item.href)
+      return window.open(item.href, "_blank");
+    openWindow(`${item.fileType}${item.kind}`, item);
+  };
+
+  const { activeLocation, setActiveLocation } = useLocationStore();
+  return (
+    <>
+      <div id="window-header">
+        <WindowControls target="finder" />
+        <Search className="icon" />
+      </div>
+      <div className="bg-white flex h-full">
+        <div className="sidebar">
+          <div>
+            <h3>Favorites</h3>
+            <ul>
+              {Object.values(locations).map((item) => (
+                <li
+                  key={item.id}
+                  className={clsx(
+                    item.id === activeLocation.id ? "active" : "non-active"
+                  )}
+                  onClick={() => setActiveLocation(item)}
+                >
+                  <img src={item.icon} className="w-4" alt={item.name} />
+                  <p className="text-sm font-medium truncate">{item.name}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3>Work</h3>
+            <ul>
+              {locations.work.children.map((item) => (
+                <li
+                  key={item.id}
+                  className={clsx(
+                    item.id === activeLocation.id ? "active" : "non-active"
+                  )}
+                  onClick={() => setActiveLocation(item)}
+                >
+                  <img src={item.icon} className="w-4" alt={item.name} />
+                  <p className="text-sm font-medium truncate">{item.name}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <ul className="content">
+          {activeLocation?.children.map((item) => (
+            <li
+              key={item.id}
+              className={`cursor-pointer ${item.position}`}
+              onClick={() => openItem(item)}
+            >
+              <img src={item.icon} alt={item.name} />
+              <p>{item.name}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
+};
+
+const finderWindow = WindowWrapper(Finder, "finder");
+
+export default finderWindow;
